@@ -26,7 +26,7 @@ export default function FilterClient({ items }) {
         onChange={(e) => setQ(e.target.value)}
         style={{ display: "block", margin: "0.5rem 0 1rem", padding: "0.5rem" }}
       />
-      <ul>
+      <ul className="card-container">
         {filtered.map((ev) => (
           <li key={ev.id} className="card">
             <h3>{ev.title}</h3>

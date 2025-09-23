@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const EVENTS = [
   {
     id: "e1",
@@ -19,6 +21,18 @@ const EVENTS = [
   },
 ];
 
+export async function generateStaticParams() {
+  return EVENTS.map((e) => ({ id: e.id }));
+}
+
+export function generateMetadata({ params }) {
+  return (async () => {
+    const { id } = await params;
+    const title = EVENTS.find((e) => e.id === id)?.title ?? "Event";
+    return { title: `${title} — EventQuest Next` };
+  })();
+}
+
 export default async function EventDetailsPage({ params }) {
   const { id } = await params;
   const ev = EVENTS.find((e) => e.id === id);
@@ -32,9 +46,12 @@ export default async function EventDetailsPage({ params }) {
       <h1>{ev.title}</h1>
       <p className="muted">{ev.date}</p>
       <p>{ev.desc}</p>
-      <a className="btn" href="/events">
-        Back to Events
-      </a>
+      {/* In a real app, use Link or a button with onClick and router.back() */}
+      {/* to avoid full page reloads when navigating back. */}
+      {/* This is just for demonstration purposes. */}
+      <Link className="btn" href="/events">
+        ← Back to events
+      </Link>
     </article>
   );
 }
