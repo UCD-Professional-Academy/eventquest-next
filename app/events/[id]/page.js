@@ -18,7 +18,15 @@ export function generateMetadata({ params }) {
     const { id } = await params;
     try {
       const event = await getEvent(id);
-      return { title: `${event?.title ?? "Event"} — EventQuest Next` };
+      return {
+        title: `${event?.title ?? "Event"} — EventQuest Next`,
+        description: `Details about event ${event?.title}`,
+        openGraph: {
+          title: `Event ${event?.title} | EventQuest`,
+          description: `Details about event ${event?.title}`,
+          type: "article",
+        },
+      };
     } catch {
       return { title: "Event — EventQuest Next" };
     }
@@ -35,6 +43,15 @@ export default async function EventDetailsPage({ params }) {
       return <p className="muted">Event not found.</p>;
     }
 
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: `Event ${event.title}`,
+      startDate: event.date,
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+    };
+
     const eventDate = new Date(event.date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -46,6 +63,10 @@ export default async function EventDetailsPage({ params }) {
 
     return (
       <article className="card">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd)}}
+          />
         {event.imageUrl && (
           <Image
             src={event.imageUrl}
