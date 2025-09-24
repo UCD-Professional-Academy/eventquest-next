@@ -1,9 +1,12 @@
 import FilterClient from "./FilterClient";
-export const revalidate = 30; // ISR: background re-gen every 30s
+export const revalidate = 0; // Disable caching during development
 
 async function getEvents() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${base}/api/events`, { next: { revalidate: 30 } });
+  const res = await fetch(`${base}/api/events`, {
+    next: { revalidate: 0 },
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error("Failed to load events");
   const data = await res.json();
   return Array.isArray(data.events) ? data.events : data;

@@ -28,7 +28,15 @@ export function validateEventInput(body, { partial = false } = {}) {
       return "date (YYYY-MM-DD) is required";
   } else {
     if (!body || typeof body !== "object") return "Body must be JSON object";
-    const allowed = ["title", "date", "description"];
+    const allowed = [
+      "title",
+      "date",
+      "description",
+      "location",
+      "imageUrl",
+      "price",
+      "maxCapacity",
+    ];
     const keys = Object.keys(body);
     if (keys.length === 0) return "Provide at least one updatable field";
     const invalid = keys.filter((k) => !allowed.includes(k));

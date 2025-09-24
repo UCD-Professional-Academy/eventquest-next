@@ -15,12 +15,20 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
-  const res = new Response(JSON.stringify({ events: listEvents() }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
-  res.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
-  return res;
+  try {
+    const events = await listEvents();
+    const res = new Response(JSON.stringify({ events }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+    res.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
+    return res;
+  } catch (error) {
+    return json(
+      { error: "server_error", message: "Failed to fetch events" },
+      500
+    );
+  }
 }
 
 export async function POST(request) {
@@ -29,15 +37,18 @@ export async function POST(request) {
     const err = validateEventInput(body, { partial: false });
     if (err) return badRequest(err);
 
-    const event = createEvent(body);
+    const event = await createEvent(body);
 
+    // Revalidate multiple paths to ensure cache is cleared
     revalidatePath("/events");
+    revalidatePath("/", "layout");
 
     return json({ event }, 201);
   } catch (e) {
-    if (e.message === "id_exists") {
-      return badRequest("Event ID already exists", { field: "id" });
-    }
-    return json({ error: "server_error", message: "Unexpected Error" }, 500);
+    console.error("Error creating event:", e);
+    return json(
+      { error: "server_error", message: "Failed to create event" },
+      500
+    );
   }
 }
