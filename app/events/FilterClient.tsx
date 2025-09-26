@@ -3,7 +3,19 @@
 import { useMemo, useState } from "react";
 import EventCard from "./EventCard";
 
-export default function FilterClient({ items }) {
+export interface Event {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  date: string;
+}
+
+interface FilterClientProps {
+  items: Event[];
+}
+
+export default function FilterClient({ items }: FilterClientProps) {
   const [q, setQ] = useState("");
   const [local, setLocal] = useState(items);
 
